@@ -1,7 +1,5 @@
-import { TUserProps } from "../database/model/TUserProps";
+import { TUserPersisted } from "../services/TUserPersisted";
 
 export interface IUserRepository {
-
-    findUserById(userID: string): Promise<TUserProps>;
-
+    findUserById(userID: string): Promise<TUserPersisted>;
 }
