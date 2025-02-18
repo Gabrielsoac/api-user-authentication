@@ -45,8 +45,36 @@ export class MongoDbUserRepository implements IUserRepository {
         }
     }
     
-    updateUserById(userId: TGetUserRequestDto, userData: TCreateUserRequestDto): Promise<TUserPersisted> {
-        throw new Error("Method not implemented.");
+    async updateUserById(userId: TGetUserRequestDto, userData: TCreateUserRequestDto): Promise<TUserPersisted> {
+        try {
+
+            const user = await UserModel.findOneAndUpdate(
+                {
+                    _id: userId.id
+                },
+                {
+                    username: userData.username,
+                    email: userData.email,
+                    password: userData.password
+                },
+                {
+                    new: true
+                }
+            );
+
+            if(!user){
+                throw new Error('Não foi possível atualizar usuário: Usuário não existe');
+            }
+
+            return {
+                id: user.id.toString(),
+                username: user.username,
+                email: user.email,
+            };
+        }
+        catch(err){
+            throw new Error((err as Error).message);
+        }
     }
     
     deleteUserById(userId: TGetUserRequestDto): Promise<void> {
