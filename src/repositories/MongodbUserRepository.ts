@@ -96,7 +96,7 @@ export class MongoDbUserRepository implements IUserRepository {
             const user = await UserModel.findById(userID);
 
             if(!user){
-                throw new Error('Erro ao buscar usuário');
+                throw new Error('Erro ao buscar usuário: Usuário com ID não encontrado');
             }
             return {
                 id: user._id.toString(),
