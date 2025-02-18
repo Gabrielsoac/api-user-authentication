@@ -77,8 +77,17 @@ export class MongoDbUserRepository implements IUserRepository {
         }
     }
     
-    deleteUserById(userId: TGetUserRequestDto): Promise<void> {
-        throw new Error("Method not implemented.");
+    async deleteUserById(userId: TGetUserRequestDto): Promise<void> {
+        try {
+            const user = await UserModel.findByIdAndDelete(userId.id);
+
+            if(!user){
+                throw new Error('Usuário com este ID não existe, portanto não pode ser deletado');
+            }
+        }
+        catch(err){
+            throw new Error((err as Error).message);
+        }
     }
     
     async findUserById(userID: string): Promise<TUserPersisted> {
