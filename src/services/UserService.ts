@@ -15,9 +15,7 @@ export class UserService implements IUserService {
     async getUser(id: string): Promise<TUserPersisted> {
         
         try {
-            console.log('cheguei no user ser');
             const user = await this.userRepository.findUserById(id);
-            console.log('passei pelo user service');
             if(!user){
                 throw new Error('User not found');
             }
