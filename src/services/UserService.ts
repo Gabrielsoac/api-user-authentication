@@ -39,14 +39,33 @@ export class UserService implements IUserService {
     }
 
     async createUser(userData: TCreateUserRequestDto): Promise<TUserPersisted> {
-        throw new Error("Method not implemented.");
+        try {
+            const user = await this.userRepository.createUser(userData);
+
+            return user;
+        }
+        catch(err){
+            throw new Error((err as Error).message);
+        }
     }
 
     async updateUser(userId: TGetUserRequestDto, userData: TCreateUserRequestDto): Promise<TUserPersisted> {
-        throw new Error("Method not implemented.");
+        try{
+            const user = await this.userRepository.updateUserById(userId, userData);
+
+            return user;
+        }
+        catch(err) {
+            throw new Error((err as Error).message);
+        }
     }
 
     async deleteUser(userId: TGetUserRequestDto): Promise<void> {
-        throw new Error("Method not implemented.");
+        try {
+            this.userRepository.deleteUserById(userId);
+        }
+        catch(err){
+            throw new Error((err as Error).message);
+        }
     }
 }
