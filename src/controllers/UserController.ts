@@ -22,9 +22,24 @@ export class UserController implements IUserController {
             throw new Error((err as Error).message);
         }
     }
-    registerUser(req: Request<{}, {}, TCreateUserRequestDto>, res: Response<TUserResponseDto>): void {
-        throw new Error("Method not implemented.");
+
+    async registerUser(req: Request<{}, {}, TCreateUserRequestDto>, res: Response<TUserResponseDto | unknown>) {
+        try {
+
+            const user = await this.userService.createUser({...req.body});
+
+            return res.status(StatusCodes.CREATED).json({...user});
+
+        } catch(err){
+            res.status(StatusCodes.BAD_REQUEST).json(
+                {
+                    code: StatusCodes.BAD_REQUEST,
+                    message: (err as Error).message
+                }
+            )
+        }
     }
+    
     updateUser(req: Request<TGetUserRequestDto, {}, TCreateUserRequestDto>, res: Response<TUserResponseDto>): void {
         throw new Error("Method not implemented.");
     }
