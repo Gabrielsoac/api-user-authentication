@@ -6,20 +6,20 @@ import { TUserPersisted } from "./TUserPersisted";
 
 export class UserService implements IUserService {
 
-    private static UserService: UserService;
+    private static instance: UserService;
     
     private constructor(private userRepository: IUserRepository){
         this.userRepository = userRepository;
     }
 
-    public static getUserSErvice(userRepository: IUserRepository){
+    public static getUserService(userRepository: IUserRepository){
 
-        if(UserService.UserService){
-            return UserService.UserService;
+        if(UserService.instance){
+            return UserService.instance;
         }
 
-        UserService.UserService = new UserService(userRepository);
-        return UserService.UserService;
+        UserService.instance = new UserService(userRepository);
+        return UserService.instance;
     }
 
     async getUser(id: string): Promise<TUserPersisted> {

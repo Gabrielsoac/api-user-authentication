@@ -9,7 +9,7 @@ import { TCreateUserRequestDto } from "./dtos/TCreateUserRequestDto";
 
 export class UserController implements IUserController {
 
-    private static UserController: UserController;
+    private static instance: UserController;
 
     private constructor(private userService: IUserService) {
         this.userService = userService;
@@ -17,13 +17,13 @@ export class UserController implements IUserController {
 
     public static getUserController(userService: IUserService){
 
-        if(UserController.UserController){
-            return UserController.UserController;
+        if(UserController.instance){
+            return UserController.instance;
         }
 
-        UserController.UserController = new UserController(userService);
+        UserController.instance = new UserController(userService);
 
-        return UserController.UserController;
+        return UserController.instance;
 
     }
 

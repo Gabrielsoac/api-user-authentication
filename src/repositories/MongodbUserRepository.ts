@@ -7,19 +7,19 @@ import { IUserRepository } from "./IUserRepository";
 
 export class MongoDbUserRepository implements IUserRepository {
 
-    private static MongoDbUserRepository: MongoDbUserRepository;
+    private static instance: MongoDbUserRepository;
 
     private constructor(){
 
     }
 
     public static getMongoDbRepository(): MongoDbUserRepository {
-        if(MongoDbUserRepository){
-            return MongoDbUserRepository.MongoDbUserRepository;
+        if(MongoDbUserRepository.instance){
+            return MongoDbUserRepository.instance;
         }
 
-        MongoDbUserRepository.MongoDbUserRepository = new MongoDbUserRepository();
-        return MongoDbUserRepository.MongoDbUserRepository;
+        MongoDbUserRepository.instance = new MongoDbUserRepository();
+        return MongoDbUserRepository.instance;
     }
     
     async findUsers(): Promise<TUserPersisted[]> {
@@ -108,15 +108,14 @@ export class MongoDbUserRepository implements IUserRepository {
     async findUserById(userID: string): Promise<TUserPersisted> {
         
         try {
-            const user = await UserModel.findById(userID);
-
-            if(!user){
-                throw new Error('Erro ao buscar usuário: Usuário com ID não encontrado');
-            }
+            // const user = await UserModel.findById(userID);
+            // if(!user){
+            //     throw new Error('Erro ao buscar usuário: Usuário com ID não encontrado');
+            // }
             return {
-                id: user._id.toString(),
-                username: user.username,
-                email: user.email
+                id: userID,
+                username: "username",
+                email: "email"
             }
         } 
         catch(err){
