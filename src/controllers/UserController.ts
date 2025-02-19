@@ -39,9 +39,21 @@ export class UserController implements IUserController {
             )
         }
     }
-    
-    updateUser(req: Request<TGetUserRequestDto, {}, TCreateUserRequestDto>, res: Response<TUserResponseDto>): void {
-        throw new Error("Method not implemented.");
+
+    async updateUser(req: Request<TGetUserRequestDto, {}, TCreateUserRequestDto>, res: Response<TUserResponseDto | unknown>): void {
+        try {
+                const user = await this.userService.updateUser({...req.params}, {...req.body});
+                
+                res.status(StatusCodes.OK).json({...user});
+        }
+        catch(err) {
+            res.status(StatusCodes.BAD_REQUEST).json(
+                {
+                    code: StatusCodes.BAD_REQUEST,
+                    message: (err as Error).message
+                }
+            );
+        }
     }
     deleteUser(req: Request<TGetUserRequestDto>, res: Response<void>): void {
         throw new Error("Method not implemented.");
