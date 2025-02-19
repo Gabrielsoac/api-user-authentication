@@ -5,8 +5,8 @@ import { MongoDbUserRepository } from '../repositories/MongodbUserRepository';
 
 const UserRouter = Router();
 
-const userRepository = new MongoDbUserRepository();
-const userService = UserService.create(userRepository);
+const userRepository = MongoDbUserRepository.getMongoDbRepository();
+const userService = UserService.getUserSErvice(userRepository);
 const userController = new UserController(userService);
 
 UserRouter.get('/user/:id', userController.getUser.bind(userController));

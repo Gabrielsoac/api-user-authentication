@@ -5,13 +5,21 @@ import { IUserService } from "./IUserService";
 import { TUserPersisted } from "./TUserPersisted";
 
 export class UserService implements IUserService {
+
+    private static UserService: UserService;
     
     private constructor(private userRepository: IUserRepository){
         this.userRepository = userRepository;
     }
 
-    public static create(userRepository: IUserRepository){
-        return new UserService(userRepository);
+    public static getUserSErvice(userRepository: IUserRepository){
+
+        if(UserService.UserService){
+            return UserService.UserService;
+        }
+
+        UserService.UserService = new UserService(userRepository);
+        return UserService.UserService;
     }
 
     async getUser(id: string): Promise<TUserPersisted> {
