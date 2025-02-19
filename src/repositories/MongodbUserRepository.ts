@@ -6,6 +6,21 @@ import { TUserPersisted } from "../services/TUserPersisted";
 import { IUserRepository } from "./IUserRepository";
 
 export class MongoDbUserRepository implements IUserRepository {
+
+    private static MongoDbUserRepository: MongoDbUserRepository;
+
+    private constructor(){
+
+    }
+
+    public static getMongoDbRepository(): MongoDbUserRepository {
+        if(MongoDbUserRepository){
+            return MongoDbUserRepository.MongoDbUserRepository;
+        }
+
+        MongoDbUserRepository.MongoDbUserRepository = new MongoDbUserRepository();
+        return MongoDbUserRepository.MongoDbUserRepository;
+    }
     
     async findUsers(): Promise<TUserPersisted[]> {
         try {
