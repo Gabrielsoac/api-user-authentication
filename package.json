@@ -26,5 +26,20 @@
     "globals": "^15.15.0",
     "nodemon": "^3.1.9",
     "typescript-eslint": "^8.24.0"
-  }
+  },
+  "name": "api-user-authentitation",
+  "description": "API dedicated for Learning Authentication and Authorization with JWT, using Typescript, ExpressJS and Mongoose",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gabrielsoac/api-user-authentication.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Gabrielsoac/api-user-authentication/issues"
+  },
+  "homepage": "https://github.com/Gabrielsoac/api-user-authentication#readme"
 }
