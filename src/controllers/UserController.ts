@@ -40,7 +40,7 @@ export class UserController implements IUserController {
         }
     }
 
-    async updateUser(req: Request<TGetUserRequestDto, {}, TCreateUserRequestDto>, res: Response<TUserResponseDto | unknown>): void {
+    async updateUser(req: Request<TGetUserRequestDto, {}, TCreateUserRequestDto>, res: Response<TUserResponseDto | unknown>) {
         try {
                 const user = await this.userService.updateUser({...req.params}, {...req.body});
                 
@@ -55,8 +55,21 @@ export class UserController implements IUserController {
             );
         }
     }
-    deleteUser(req: Request<TGetUserRequestDto>, res: Response<void>): void {
-        throw new Error("Method not implemented.");
+
+    async deleteUser(req: Request<TGetUserRequestDto>, res: Response<void | unknown>) {
+        try {
+            this.userService.deleteUser({...req.params});    
+
+            res.status(StatusCodes.OK).end()
+        }
+        catch(err){
+            res.status(StatusCodes.BAD_REQUEST).json(
+                {
+                    code: StatusCodes.BAD_REQUEST,
+                    message: (err as Error).message
+                }
+            );
+        }
     }
 
     async getUser(req: Request<TGetUserRequestDto>, res: Response<TUserResponseDto | unknown>) {
