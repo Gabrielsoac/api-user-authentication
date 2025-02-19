@@ -7,7 +7,7 @@ const UserRouter = Router();
 
 const userRepository = MongoDbUserRepository.getMongoDbRepository();
 const userService = UserService.getUserSErvice(userRepository);
-const userController = new UserController(userService);
+const userController = UserController.getUserController(userService);
 
 UserRouter.get('/user/:id', userController.getUser.bind(userController));
 

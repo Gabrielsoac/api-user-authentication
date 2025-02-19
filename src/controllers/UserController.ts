@@ -9,8 +9,22 @@ import { TCreateUserRequestDto } from "./dtos/TCreateUserRequestDto";
 
 export class UserController implements IUserController {
 
-    constructor(private userService: IUserService) {
+    private static UserController: UserController;
+
+    private constructor(private userService: IUserService) {
         this.userService = userService;
+    }
+
+    public static getUserController(userService: IUserService){
+
+        if(UserController.UserController){
+            return UserController.UserController;
+        }
+
+        UserController.UserController = new UserController(userService);
+
+        return UserController.UserController;
+
     }
 
     async listUsers(_: Request, res: Response<TUserResponseDto[]>) {
