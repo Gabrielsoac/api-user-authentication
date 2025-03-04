@@ -4,5 +4,6 @@ import { UserRouter } from '../routes/UserRouter';
 const Server = express();
 
 Server.use(UserRouter);
+Server.use(express.json());
 
 export { Server }

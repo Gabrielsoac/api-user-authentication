@@ -4,12 +4,15 @@ import "dotenv/config"
 
 const port = process.env.PORT;
 
-Server.listen(port, async () => {
+Server.listen(
+    port,
+    async () => {
 
-    try {
-        await connectDb();
-        console.log(`server running on port ${port}`);
-    } catch {
-        console.log("Running Server Error");
+        try {
+            await connectDb();
+            console.log(`server running on port ${port}`);
+        } catch {
+            console.log("Running Server Error");
+        }
     }
-});
+);
