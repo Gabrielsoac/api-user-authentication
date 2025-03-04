@@ -136,17 +136,20 @@ export class MongoDbUserRepository implements IUserRepository {
     async findUserById(userID: string): Promise<TUserPersisted | null> {
         
         try {
-            // const user = await UserModel.findById(userID);
-            // if(!user){
-            //     throw new Error('Erro ao buscar usuário: Usuário com ID não encontrado');
-            // }
-            return {
-                id: userID,
-                username: "username",
-                email: "email",
-                password: "1234"
+            
+            const user = await UserModel.findById(userID);
+
+            if(!user){
+                return null;
             }
-        } 
+
+            return {
+                id: user._id.toString(),
+                username: user.username,
+                email: user.email,
+                password: user.password
+            }
+        }
         catch(err){
             throw new Error((err as Error).message);
         }
