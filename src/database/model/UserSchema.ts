@@ -10,5 +10,6 @@ const UserSchema = new Schema<TUserProps>(
 );
 
 UserSchema.index({email: 1}, {unique: true});
+UserSchema.index({username: 1}, {unique: true});
 
 export const UserModel = model<TUserProps>('User', UserSchema);

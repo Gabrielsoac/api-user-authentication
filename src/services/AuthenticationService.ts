@@ -2,6 +2,7 @@ import 'dotenv/config';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { IUserRepository } from '../repositories/IUserRepository';
+import { TUserPersisted } from './TUserPersisted';
 
 export class AuthenticationService {
 
@@ -48,6 +49,35 @@ export class AuthenticationService {
             throw new Error('Internal Server Error');
         }
         catch (err) {
+            throw new Error((err as Error).message);
+        }
+    }
+
+    public async register(username: string, password: string, email: string): Promise<TUserPersisted> {
+        
+        try {
+
+            const userAlreadyExists = await this.userRepository.findUserByUsername(username);
+
+            if(userAlreadyExists){
+                throw new Error(`User with username: ${username} already exists`);
+            }
+
+            const salt = 10;
+            const encryptedPassword = await bcrypt.hash(password, salt);
+
+            const user = this.userRepository.createUser(
+                {
+                    username,
+                    password: encryptedPassword,
+                    email,
+                }
+            );
+
+            return user;
+
+        } 
+        catch(err){
             throw new Error((err as Error).message);
         }
     }
