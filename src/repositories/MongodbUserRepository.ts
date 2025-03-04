@@ -21,6 +21,31 @@ export class MongoDbUserRepository implements IUserRepository {
         MongoDbUserRepository.instance = new MongoDbUserRepository();
         return MongoDbUserRepository.instance;
     }
+
+    async findUserByUsername(username: string): Promise<TUserPersisted | null> {
+        
+        try {
+
+            const user = await UserModel.findOne(
+                {
+                    username: username
+                }
+            );
+
+            if(!user){
+                return null;
+            }
+
+            return {
+                id: user._id.toString(),
+                username: user.username,
+                email: user.email,
+                password: user.password
+            }
+        } catch(err){
+            throw new Error((err as Error).message);
+        }
+    }
     
     async findUsers(): Promise<TUserPersisted[]> {
         try {
@@ -32,6 +57,7 @@ export class MongoDbUserRepository implements IUserRepository {
                         id: x._id.toString(),
                         username: x.username,
                         email: x.email,
+                        password: x.password
                     }
                 }
             );
@@ -52,7 +78,8 @@ export class MongoDbUserRepository implements IUserRepository {
             return {
                 id: user._id.toString(),
                 username: user.username,
-                email: user.email
+                email: user.email,
+                password: user.password
             }
         }
         catch(err){
@@ -85,6 +112,7 @@ export class MongoDbUserRepository implements IUserRepository {
                 id: user.id.toString(),
                 username: user.username,
                 email: user.email,
+                password: user.password
             };
         }
         catch(err){
@@ -105,7 +133,7 @@ export class MongoDbUserRepository implements IUserRepository {
         }
     }
     
-    async findUserById(userID: string): Promise<TUserPersisted> {
+    async findUserById(userID: string): Promise<TUserPersisted | null> {
         
         try {
             // const user = await UserModel.findById(userID);
@@ -115,7 +143,8 @@ export class MongoDbUserRepository implements IUserRepository {
             return {
                 id: userID,
                 username: "username",
-                email: "email"
+                email: "email",
+                password: "1234"
             }
         } 
         catch(err){
