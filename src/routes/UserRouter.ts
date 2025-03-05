@@ -2,7 +2,7 @@ import {  Router } from 'express';
 import { UserController } from '../controllers/UserController';
 import { UserService } from '../services/UserService';
 import { MongoDbUserRepository } from '../repositories/MongodbUserRepository';
-import { AuthenticationController } from '../controllers/AuthenticationController';
+import { UserAuthenticationController } from '../controllers/UserAuthenticationController';
 import { AuthenticationService } from '../services/AuthenticationService';
 
 const UserRouter = Router();
@@ -12,7 +12,7 @@ const userService = UserService.getUserService(userRepository);
 const userController = UserController.getUserController(userService);
 
 const authenticationService = AuthenticationService.getAuthenticationService(userRepository);
-const authenticationController = AuthenticationController.getAuthenticationController(authenticationService);
+const authenticationController = UserAuthenticationController.getAuthenticationController(authenticationService);
 
 UserRouter.get(
     '/:id',
@@ -21,7 +21,7 @@ UserRouter.get(
 
 UserRouter.post(
     '/register',
-    authenticationController.registerUser.bind(authenticationController)
+    authenticationController.register.bind(authenticationController)
 );
 
 UserRouter.post(

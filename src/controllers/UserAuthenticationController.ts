@@ -1,14 +1,14 @@
 import { StatusCodes } from "http-status-codes";
 import { AuthenticationService } from "../services/AuthenticationService";
-import { TCreateUserRequestDto } from "./dtos/TRegisterUserRequestDto";
+import { TRegisterUserRequestDto } from "./dtos/TRegisterUserRequestDto";
 import { TUserResponseDto } from "./dtos/TUserResponseDto";
 import { Request, Response } from "express";
 import { TLoginUserResponseDto } from "./dtos/TLoginUserResponseDto";
 
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-export class AuthenticationController {
+export class UserAuthenticationController {
 
-    private static instance: AuthenticationController;
+    private static instance: UserAuthenticationController;
 
     private authenticationService: AuthenticationService;
 
@@ -17,16 +17,16 @@ export class AuthenticationController {
     }
 
     public static getAuthenticationController(authenticationService: AuthenticationService){
-        if(AuthenticationController.instance) {
-            return AuthenticationController.instance;
+        if(UserAuthenticationController.instance) {
+            return UserAuthenticationController.instance;
         }
 
-        AuthenticationController.instance = new AuthenticationController(authenticationService);
+        UserAuthenticationController.instance = new UserAuthenticationController(authenticationService);
 
-        return AuthenticationController.instance;
+        return UserAuthenticationController.instance;
     }
 
-    async registerUser(req: Request<{}, {}, TCreateUserRequestDto>, res: Response<TUserResponseDto | TError >) {
+    async register(req: Request<{}, {}, TRegisterUserRequestDto>, res: Response<TUserResponseDto | TError >) {
         
         try {
             const user = await this.authenticationService.register({...req.body});

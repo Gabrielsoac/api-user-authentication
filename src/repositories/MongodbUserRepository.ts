@@ -1,5 +1,5 @@
 // import { UserModel } from "../database/model/UserSchema";
-import { TCreateUserRequestDto } from "../controllers/dtos/TRegisterUserRequestDto";
+import { TRegisterUserRequestDto } from "../controllers/dtos/TRegisterUserRequestDto";
 import { TGetUserRequestDto } from "../controllers/dtos/TGetUserRequestDto";
 import { UserModel } from "../database/model/UserSchema";
 import { TUserPersisted } from "../services/TUserPersisted";
@@ -88,7 +88,7 @@ export class MongoDbUserRepository implements IUserRepository {
         }
     }
     
-    async createUser(userData: TCreateUserRequestDto): Promise<TUserPersisted> {
+    async createUser(userData: TRegisterUserRequestDto): Promise<TUserPersisted> {
         try {
 
             console.log('cheguei no createUser' + userData);
@@ -108,7 +108,7 @@ export class MongoDbUserRepository implements IUserRepository {
         }
     }
     
-    async updateUserById(userId: TGetUserRequestDto, userData: TCreateUserRequestDto): Promise<TUserPersisted> {
+    async updateUserById(userId: TGetUserRequestDto, userData: TRegisterUserRequestDto): Promise<TUserPersisted> {
         try {
 
             const user = await UserModel.findOneAndUpdate(

@@ -1,4 +1,4 @@
-import { TCreateUserRequestDto } from "../controllers/dtos/TRegisterUserRequestDto";
+import { TRegisterUserRequestDto } from "../controllers/dtos/TRegisterUserRequestDto";
 import { TGetUserRequestDto } from "../controllers/dtos/TGetUserRequestDto";
 import { IUserRepository } from "../repositories/IUserRepository";
 import { IUserService } from "./IUserService";
@@ -46,7 +46,7 @@ export class UserService implements IUserService {
         }
     }
 
-    async createUser(userData: TCreateUserRequestDto): Promise<TUserPersisted> {
+    async createUser(userData: TRegisterUserRequestDto): Promise<TUserPersisted> {
         try {
             const user = await this.userRepository.createUser(userData);
 
@@ -57,7 +57,7 @@ export class UserService implements IUserService {
         }
     }
 
-    async updateUser(userId: TGetUserRequestDto, userData: TCreateUserRequestDto): Promise<TUserPersisted> {
+    async updateUser(userId: TGetUserRequestDto, userData: TRegisterUserRequestDto): Promise<TUserPersisted> {
         try{
             const user = await this.userRepository.updateUserById(userId, userData);
 

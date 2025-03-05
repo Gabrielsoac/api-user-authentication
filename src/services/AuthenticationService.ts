@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs'
 import { IUserRepository } from '../repositories/IUserRepository';
 import { TUserPersisted } from './TUserPersisted';
-import { TCreateUserRequestDto } from '../controllers/dtos/TRegisterUserRequestDto';
+import { TRegisterUserRequestDto } from '../controllers/dtos/TRegisterUserRequestDto';
 import { TLoginUserRequestDto } from '../controllers/dtos/TLoginUserRequestDto';
 
 export class AuthenticationService {
@@ -68,7 +68,7 @@ export class AuthenticationService {
         }
     }
 
-    public async register(data: TCreateUserRequestDto): Promise<TUserPersisted> {
+    public async register(data: TRegisterUserRequestDto): Promise<TUserPersisted> {
 
         try {
 
