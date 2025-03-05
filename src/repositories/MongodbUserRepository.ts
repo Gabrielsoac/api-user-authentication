@@ -22,13 +22,32 @@ export class MongoDbUserRepository implements IUserRepository {
         return MongoDbUserRepository.instance;
     }
 
-    async findUserByUsername(username: string): Promise<TUserPersisted | null> {
-        
+    async findUserByEmail(email: string): Promise<TUserPersisted | null> {
         try {
+            const user = await UserModel.findOne({email: email});
 
+            if(!user){
+                return null;
+            }
+
+            return {
+                id: user._id.toString(),
+                username: user.username,
+                email: user.email,
+                password: user.password
+            }
+        }   
+        catch(err) {
+            throw new Error((err as Error).message);
+        }
+    }
+
+    async findUserByUsername(username: string): Promise<TUserPersisted | null> {
+
+        try {
             const user = await UserModel.findOne(
                 {
-                    username: username
+                    username
                 }
             );
 
@@ -71,6 +90,8 @@ export class MongoDbUserRepository implements IUserRepository {
     
     async createUser(userData: TCreateUserRequestDto): Promise<TUserPersisted> {
         try {
+
+            console.log('cheguei no createUser' + userData);
             const user = await UserModel.create(
                 {...userData}
             );
@@ -105,7 +126,7 @@ export class MongoDbUserRepository implements IUserRepository {
             );
 
             if(!user){
-                throw new Error('Não foi possível atualizar usuário: Usuário não existe');
+                throw new Error('User not found');
             }
 
             return {
@@ -125,7 +146,7 @@ export class MongoDbUserRepository implements IUserRepository {
             const user = await UserModel.findByIdAndDelete(userId.id);
 
             if(!user){
-                throw new Error('Usuário com este ID não existe, portanto não pode ser deletado');
+                throw new Error('User not found');
             }
         }
         catch(err){

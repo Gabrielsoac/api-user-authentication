@@ -7,7 +7,7 @@ import { Request, Response } from "express";
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 export class AuthenticationController {
 
-    private static instance: AuthenticationController
+    private static instance: AuthenticationController;
 
     private authenticationService: AuthenticationService;
 
@@ -15,7 +15,7 @@ export class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    public getAuthenticationController(authenticationService: AuthenticationService){
+    public static getAuthenticationController(authenticationService: AuthenticationService){
         if(AuthenticationController.instance) {
             return AuthenticationController.instance;
         }
@@ -25,16 +25,18 @@ export class AuthenticationController {
         return AuthenticationController.instance;
     }
 
-    async registerUser(req: Request<{}, {}, TCreateUserRequestDto>, res: Response<TUserResponseDto | unknown>) {
+    async registerUser(req: Request<{}, {}, TCreateUserRequestDto>, res: Response<TUserResponseDto | TError >) {
+        
         try {
+            const user = await this.authenticationService.register({...req.body});
 
-            const user = await this.authenticationService.register(
-                req.body.username,
-                req.body.email,
-                req.body.password
+            res.status(StatusCodes.CREATED).json(
+                {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                }
             );
-
-            return res.status(StatusCodes.CREATED).json({...user});
 
         } catch(err){
             res.status(StatusCodes.BAD_REQUEST).json(
@@ -46,7 +48,7 @@ export class AuthenticationController {
         }
     }
 
-    async login(req: Request<{}, {}, TLoginUser>, res: Response<TTokenJWT | unknown>) {
+    async login(req: Request<{}, {}, TLoginUser>, res: Response<TTokenJWT | TError>) {
 
         try {
             const token = await this.authenticationService.login(req.body.username, req.body.password);
@@ -59,13 +61,17 @@ export class AuthenticationController {
         } catch(err){
             res.status(StatusCodes.BAD_REQUEST).json(
                 {
+                    code: StatusCodes.BAD_REQUEST,
                     message: (err as Error).message,
                 }
             );
         }
-
-
     }
+}
+
+export type TError = {
+    code: number,
+    message: string
 }
 
 export type TLoginUser = {

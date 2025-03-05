@@ -37,23 +37,6 @@ export class UserController implements IUserController {
         }
     }
 
-    async registerUser(req: Request<{}, {}, TCreateUserRequestDto>, res: Response<TUserResponseDto | unknown>) {
-        try {
-
-            const user = await this.userService.createUser({...req.body});
-
-            return res.status(StatusCodes.CREATED).json({...user});
-
-        } catch(err){
-            res.status(StatusCodes.BAD_REQUEST).json(
-                {
-                    code: StatusCodes.BAD_REQUEST,
-                    message: (err as Error).message
-                }
-            )
-        }
-    }
-
     async updateUser(req: Request<TGetUserRequestDto, {}, TCreateUserRequestDto>, res: Response<TUserResponseDto | unknown>) {
         try {
                 const user = await this.userService.updateUser({...req.params}, {...req.body});

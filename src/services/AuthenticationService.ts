@@ -1,18 +1,32 @@
 import 'dotenv/config';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs'
 import { IUserRepository } from '../repositories/IUserRepository';
 import { TUserPersisted } from './TUserPersisted';
+import { TCreateUserRequestDto } from '../controllers/dtos/TCreateUserRequestDto';
 
 export class AuthenticationService {
 
     private userRepository: IUserRepository;
 
-    constructor(userRepository: IUserRepository){
+    private static instance: AuthenticationService;
+
+    private SECRET_KEY: string | undefined = process.env.SECRET_KEY;
+
+
+    private constructor(userRepository: IUserRepository){
         this.userRepository = userRepository;
     }
 
-    private SECRET_KEY: string | undefined = process.env.SECRET_KEY;
+    public static getAuthenticationService(userRepository: IUserRepository){
+        if(AuthenticationService.instance){
+            return AuthenticationService.instance;
+        }
+
+        AuthenticationService.instance = new AuthenticationService(userRepository);
+
+        return AuthenticationService.instance;
+    }
 
     public async login (username: string, password: string): Promise<string> {
 
@@ -53,24 +67,30 @@ export class AuthenticationService {
         }
     }
 
-    public async register(username: string, password: string, email: string): Promise<TUserPersisted> {
-        
+    public async register(data: TCreateUserRequestDto): Promise<TUserPersisted> {
+
         try {
 
-            const userAlreadyExists = await this.userRepository.findUserByUsername(username);
+            const usernameAlreadyExists = await this.userRepository.findUserByUsername(data.username);
+            const emailAlreadyExists = await this.userRepository.findUserByEmail(data.email);
 
-            if(userAlreadyExists){
-                throw new Error(`User with username: ${username} already exists`);
+            if(usernameAlreadyExists) {
+                throw new Error(`User with username ${data.username} already exists`);
             }
 
-            const salt = 10;
-            const encryptedPassword = await bcrypt.hash(password, salt);
+            if(emailAlreadyExists){
+                throw new Error(`User with email ${data.email} already exists`);
+            }
 
-            const user = this.userRepository.createUser(
+            const saltRounds = await bcrypt.genSalt(10);
+
+            const encryptedPassword = await bcrypt.hash(data.password, saltRounds);
+
+            const user = await this.userRepository.createUser(
                 {
-                    username,
+                    username: data.username,
+                    email: data.email,
                     password: encryptedPassword,
-                    email,
                 }
             );
 

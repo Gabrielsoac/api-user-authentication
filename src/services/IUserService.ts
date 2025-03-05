@@ -6,7 +6,6 @@ export interface IUserService {
 
     getUser(id: string): Promise<TUserPersisted>;
     getUsers(): Promise<TUserPersisted[]>;
-    createUser(userData: TCreateUserRequestDto): Promise<TUserPersisted>;
     updateUser(userId: TGetUserRequestDto, userData: TCreateUserRequestDto): Promise<TUserPersisted>
     deleteUser(userId: TGetUserRequestDto): Promise<void>
 }
