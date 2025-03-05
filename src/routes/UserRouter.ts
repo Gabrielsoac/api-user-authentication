@@ -24,4 +24,9 @@ UserRouter.post(
     authenticationController.registerUser.bind(authenticationController)
 );
 
+UserRouter.post(
+    '/login',
+    authenticationController.login.bind(authenticationController),
+)
+
 export { UserRouter };

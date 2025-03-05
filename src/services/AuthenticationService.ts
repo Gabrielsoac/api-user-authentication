@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs'
 import { IUserRepository } from '../repositories/IUserRepository';
 import { TUserPersisted } from './TUserPersisted';
 import { TCreateUserRequestDto } from '../controllers/dtos/TCreateUserRequestDto';
+import { TLoginUserRequestDto } from '../controllers/dtos/TLoginUserRequestDto';
 
 export class AuthenticationService {
 
@@ -28,17 +29,17 @@ export class AuthenticationService {
         return AuthenticationService.instance;
     }
 
-    public async login (username: string, password: string): Promise<string> {
+    public async login (data: TLoginUserRequestDto): Promise<string> {
 
         try {
 
-            const user = await this.userRepository.findUserByUsername(username);
+            const user = await this.userRepository.findUserByUsername(data.username);
 
             if(!user){
                 throw new Error('Invalid User or Password');
             }
 
-            const loginSucessful = await bcrypt.compare(password, user.password);
+            const loginSucessful = await bcrypt.compare(data.password, user.password);
 
             if(!loginSucessful){
                 throw new Error('Invalid User or Password')

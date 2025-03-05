@@ -3,6 +3,7 @@ import { AuthenticationService } from "../services/AuthenticationService";
 import { TCreateUserRequestDto } from "./dtos/TCreateUserRequestDto";
 import { TUserResponseDto } from "./dtos/TUserResponseDto";
 import { Request, Response } from "express";
+import { TLoginUserResponseDto } from "./dtos/TLoginUserResponseDto";
 
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 export class AuthenticationController {
@@ -48,10 +49,10 @@ export class AuthenticationController {
         }
     }
 
-    async login(req: Request<{}, {}, TLoginUser>, res: Response<TTokenJWT | TError>) {
+    async login(req: Request<{}, {}, TLoginUser>, res: Response<TLoginUserResponseDto | TError>) {
 
         try {
-            const token = await this.authenticationService.login(req.body.username, req.body.password);
+            const token = await this.authenticationService.login({...req.body});
 
             res.status(StatusCodes.OK).json(
                 {
@@ -77,8 +78,4 @@ export type TError = {
 export type TLoginUser = {
     username: string,
     password: string
-} 
-
-export type TTokenJWT = {
-    token: string
 }
