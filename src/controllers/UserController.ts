@@ -82,22 +82,24 @@ export class UserController implements IUserController {
                 throw new Error('Token Missing');
             }
 
-            if(req.user.role !== 'ADMIN') {
+            if(req.user.role === 'USER' || req.user.role ==='ADMIN') {
+                const user = await this.userService.getUser(req.params.id);
+            
+                res.status(StatusCodes.OK).json(
+                    {
+                        id: user.id,
+                        username: user.username,
+                        email: user.email
+                    }
+                );
+            } else {
                 res.status(StatusCodes.UNAUTHORIZED).json(
                     {
                         code: StatusCodes.UNAUTHORIZED,
                         message: "Unauthorized!"
                     }
-                )
+                ).end();
             }
-            
-            const user = await this.userService.getUser(req.params.id);
-            
-            res.status(StatusCodes.OK).json({
-                id: user.id,
-                username: user.username,
-                email: user.email
-            });
 
         } catch(err) {
             res.status(StatusCodes.NOT_FOUND).json(
@@ -106,29 +108,29 @@ export class UserController implements IUserController {
                     message: ((err as Error).message)
                 }
             )
-        }
+        }               
     }
 
-        async register(req: Request<{}, {}, TRegisterUserRequestDto>, res: Response<TUserResponseDto | TError >) {
-            
-            try {
-                const user = await this.authenticationService.register({...req.body});
-    
-                res.status(StatusCodes.CREATED).json(
-                    {
-                        id: user.id,
-                        username: user.username,
-                        email: user.email,
-                    }
-                );
-    
-            } catch(err){
-                res.status(StatusCodes.BAD_REQUEST).json(
-                    {
-                        code: StatusCodes.BAD_REQUEST,
-                        message: (err as Error).message
-                    }
-                )
-            }
+    async register(req: Request<{}, {}, TRegisterUserRequestDto>, res: Response<TUserResponseDto | TError >) {
+        
+        try {
+            const user = await this.authenticationService.register({...req.body});
+
+            res.status(StatusCodes.CREATED).json(
+                {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                }
+            );
+
+        } catch(err){
+            res.status(StatusCodes.BAD_REQUEST).json(
+                {
+                    code: StatusCodes.BAD_REQUEST,
+                    message: (err as Error).message
+                }
+            )
         }
+    }
 }
