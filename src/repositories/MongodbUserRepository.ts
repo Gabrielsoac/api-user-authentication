@@ -90,8 +90,6 @@ export class MongoDbUserRepository implements IUserRepository {
     
     async createUser(userData: TRegisterUserRequestDto): Promise<TUserPersisted> {
         try {
-
-            console.log('cheguei no createUser' + userData);
             const user = await UserModel.create(
                 {...userData}
             );
