@@ -6,22 +6,26 @@ import { IUserService } from "../services/IUserService";
 import { TGetUserRequestDto } from "./dtos/TGetUserRequestDto";
 import { TUserResponseDto } from "./dtos/TUserResponseDto";
 import { TRegisterUserRequestDto } from "./dtos/TRegisterUserRequestDto";
+import { AuthenticationService } from "../services/AuthenticationService";
+import { TError } from "./LoginController";
+import { JwtPayload } from "jsonwebtoken";
 
 export class UserController implements IUserController {
 
     private static instance: UserController;
 
-    private constructor(private userService: IUserService) {
+    private constructor(private userService: IUserService, private authenticationService: AuthenticationService) {
         this.userService = userService;
+        this.authenticationService = authenticationService;
     }
 
-    public static getUserController(userService: IUserService){
+    public static getUserController(userService: IUserService, authenticationService: AuthenticationService){
 
         if(UserController.instance){
             return UserController.instance;
         }
 
-        UserController.instance = new UserController(userService);
+        UserController.instance = new UserController(userService, authenticationService);
 
         return UserController.instance;
 
@@ -69,11 +73,32 @@ export class UserController implements IUserController {
         }
     }
 
-    async getUser(req: Request<TGetUserRequestDto>, res: Response<TUserResponseDto | unknown>) {
+    async getUser(req: Request<TGetUserRequestDto> & {user?: JwtPayload}, res: Response<TUserResponseDto | unknown>) {
 
         try {
+
+            if(!req.user) {
+                console.log(req.user);
+                throw new Error('Token Missing');
+            }
+
+            if(req.user.role !== 'ADMIN') {
+                res.status(StatusCodes.UNAUTHORIZED).json(
+                    {
+                        code: StatusCodes.UNAUTHORIZED,
+                        message: "Unauthorized!"
+                    }
+                )
+            }
+            
             const user = await this.userService.getUser(req.params.id);
-            res.status(StatusCodes.OK).json(user);
+            
+            res.status(StatusCodes.OK).json({
+                id: user.id,
+                username: user.username,
+                email: user.email
+            });
+
         } catch(err) {
             res.status(StatusCodes.NOT_FOUND).json(
                 {
@@ -83,4 +108,27 @@ export class UserController implements IUserController {
             )
         }
     }
+
+        async register(req: Request<{}, {}, TRegisterUserRequestDto>, res: Response<TUserResponseDto | TError >) {
+            
+            try {
+                const user = await this.authenticationService.register({...req.body});
+    
+                res.status(StatusCodes.CREATED).json(
+                    {
+                        id: user.id,
+                        username: user.username,
+                        email: user.email,
+                    }
+                );
+    
+            } catch(err){
+                res.status(StatusCodes.BAD_REQUEST).json(
+                    {
+                        code: StatusCodes.BAD_REQUEST,
+                        message: (err as Error).message
+                    }
+                )
+            }
+        }
 }

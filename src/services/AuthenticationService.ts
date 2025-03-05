@@ -32,7 +32,6 @@ export class AuthenticationService {
     public async login (data: TLoginUserRequestDto): Promise<string> {
 
         try {
-
             const user = await this.userRepository.findUserByUsername(data.username);
 
             if(!user){
@@ -94,12 +93,33 @@ export class AuthenticationService {
                     password: encryptedPassword,
                 }
             );
-
             return user;
-
         } 
         catch(err){
             throw new Error((err as Error).message);
         }
+    }
+
+    public async validateToken(token: string): Promise<jwt.JwtPayload | null> {
+
+        let userHeader = null;
+
+        try {
+            jwt.verify(
+                token,
+                (this.SECRET_KEY as string),
+                (err, user) => {
+                    if(err){
+                        throw new Error('Invalid Token');
+                    }
+                    userHeader = user;
+                }
+            )
+        } catch(err){
+            throw new Error((err as Error).message);
+        }
+
+        console.log(userHeader);
+        return userHeader
     }
 }

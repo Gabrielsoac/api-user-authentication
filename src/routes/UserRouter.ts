@@ -1,32 +1,37 @@
 import {  Router } from 'express';
-import { UserController } from '../controllers/UserController';
 import { UserService } from '../services/UserService';
 import { MongoDbUserRepository } from '../repositories/MongodbUserRepository';
-import { UserAuthenticationController } from '../controllers/UserAuthenticationController';
 import { AuthenticationService } from '../services/AuthenticationService';
+import { LoginController } from '../controllers/LoginController';
+import { UserController } from '../controllers/UserController';
+import { AuthenticationMiddleware } from '../middleware/AuthenticationMiddleware';
 
 const UserRouter = Router();
 
 const userRepository = MongoDbUserRepository.getMongoDbRepository();
-const userService = UserService.getUserService(userRepository);
-const userController = UserController.getUserController(userService);
 
+const userService = UserService.getUserService(userRepository);
 const authenticationService = AuthenticationService.getAuthenticationService(userRepository);
-const authenticationController = UserAuthenticationController.getAuthenticationController(authenticationService);
+
+const loginController = LoginController.getLoginController(authenticationService);
+const userController = UserController.getUserController(userService, authenticationService);
+
+const authMiddleware = AuthenticationMiddleware.getAuthenticationMiddleware(authenticationService);
 
 UserRouter.get(
     '/:id',
+    authMiddleware.auth.bind(authMiddleware),
     userController.getUser.bind(userController)
 );
 
 UserRouter.post(
     '/register',
-    authenticationController.register.bind(authenticationController)
+    userController.register.bind(userController)
 );
 
 UserRouter.post(
     '/login',
-    authenticationController.login.bind(authenticationController),
+    loginController.login.bind(loginController),
 )
 
 export { UserRouter };
