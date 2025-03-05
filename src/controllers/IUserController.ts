@@ -2,7 +2,7 @@
 import { Request, Response } from "express";
 import { TUserResponseDto } from "./dtos/TUserResponseDto";
 import { TGetUserRequestDto } from "./dtos/TGetUserRequestDto";
-import { TCreateUserRequestDto } from "./dtos/TCreateUserRequestDto";
+import { TCreateUserRequestDto } from "./dtos/TRegisterUserRequestDto";
 
 export interface IUserController {
     getUser(req: Request<TGetUserRequestDto, {}, {}>, res: Response<TUserResponseDto>): void

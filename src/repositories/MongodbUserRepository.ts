@@ -1,5 +1,5 @@
 // import { UserModel } from "../database/model/UserSchema";
-import { TCreateUserRequestDto } from "../controllers/dtos/TCreateUserRequestDto";
+import { TCreateUserRequestDto } from "../controllers/dtos/TRegisterUserRequestDto";
 import { TGetUserRequestDto } from "../controllers/dtos/TGetUserRequestDto";
 import { UserModel } from "../database/model/UserSchema";
 import { TUserPersisted } from "../services/TUserPersisted";

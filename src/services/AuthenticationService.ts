@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs'
 import { IUserRepository } from '../repositories/IUserRepository';
 import { TUserPersisted } from './TUserPersisted';
-import { TCreateUserRequestDto } from '../controllers/dtos/TCreateUserRequestDto';
+import { TCreateUserRequestDto } from '../controllers/dtos/TRegisterUserRequestDto';
 import { TLoginUserRequestDto } from '../controllers/dtos/TLoginUserRequestDto';
 
 export class AuthenticationService {

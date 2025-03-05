@@ -5,7 +5,7 @@ import { StatusCodes } from "http-status-codes";
 import { IUserService } from "../services/IUserService";
 import { TGetUserRequestDto } from "./dtos/TGetUserRequestDto";
 import { TUserResponseDto } from "./dtos/TUserResponseDto";
-import { TCreateUserRequestDto } from "./dtos/TCreateUserRequestDto";
+import { TCreateUserRequestDto } from "./dtos/TRegisterUserRequestDto";
 
 export class UserController implements IUserController {
 

@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { AuthenticationService } from "../services/AuthenticationService";
-import { TCreateUserRequestDto } from "./dtos/TCreateUserRequestDto";
+import { TCreateUserRequestDto } from "./dtos/TRegisterUserRequestDto";
 import { TUserResponseDto } from "./dtos/TUserResponseDto";
 import { Request, Response } from "express";
 import { TLoginUserResponseDto } from "./dtos/TLoginUserResponseDto";

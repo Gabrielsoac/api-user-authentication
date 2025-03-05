@@ -1,4 +1,4 @@
-import { TCreateUserRequestDto } from "../controllers/dtos/TCreateUserRequestDto";
+import { TCreateUserRequestDto } from "../controllers/dtos/TRegisterUserRequestDto";
 import { TGetUserRequestDto } from "../controllers/dtos/TGetUserRequestDto";
 import { IUserRepository } from "../repositories/IUserRepository";
 import { IUserService } from "./IUserService";
