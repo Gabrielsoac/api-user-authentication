@@ -6,9 +6,10 @@ import { TRegisterUserRequestDto } from "./dtos/TRegisterUserRequestDto";
 import { TError } from "./LoginController";
 
 export interface IUserController {
-    getUser(req: Request<TGetUserRequestDto, {}, {}>, res: Response<TUserResponseDto>): void
-    listUsers(_: Request, res: Response<TUserResponseDto[]>): void
-    updateUser(req: Request<TGetUserRequestDto, {}, TRegisterUserRequestDto>, res: Response<TUserResponseDto>): void
-    deleteUser(req: Request<TGetUserRequestDto>, res: Response<void>): void
-    register(req: Request<{}, {}, TRegisterUserRequestDto>, res: Response<TUserResponseDto | TError >): void
+    getUser(req: Request<TGetUserRequestDto, {}, {}>, res: Response<TUserResponseDto>): Promise<void>
+    listUsers(_: Request, res: Response<TUserResponseDto[]>): Promise<void>
+    updateUser(req: Request<TGetUserRequestDto, {}, TRegisterUserRequestDto>, res: Response<TUserResponseDto>): Promise<void>
+    deleteUser(req: Request<TGetUserRequestDto>, res: Response<void>): Promise<void>
+    register(req: Request<{}, {}, TRegisterUserRequestDto>, res: Response<TUserResponseDto | TError >): Promise<void>
+    profile(req: Request, res: Response<TUserResponseDto | TError >): Promise<void>
 }

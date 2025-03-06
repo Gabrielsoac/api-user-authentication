@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 // import { UserModel } from "../database/model/UserSchema";
 import { TRegisterUserRequestDto } from "../controllers/dtos/TRegisterUserRequestDto";
-import { TGetUserRequestDto } from "../controllers/dtos/TGetUserRequestDto";
 import { UserModel } from "../database/model/UserSchema";
 import { TUserPersisted } from "../services/TUserPersisted";
 import { IUserRepository } from "./IUserRepository";
@@ -100,12 +99,12 @@ export class MongoDbUserRepository implements IUserRepository {
         }
     }
     
-    async updateUserById(userId: TGetUserRequestDto, userData: TRegisterUserRequestDto): Promise<TUserPersisted> {
+    async updateUserById(userId: string, userData: TRegisterUserRequestDto): Promise<TUserPersisted> {
         try {
 
             const user = await UserModel.findOneAndUpdate(
                 {
-                    _id: userId.id
+                    _id: userId
                 },
                 {
                     username: userData.username,

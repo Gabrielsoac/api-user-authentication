@@ -52,4 +52,10 @@ UserRouter.delete(
     userController.deleteUser.bind(userController),
 )
 
+UserRouter.get(
+    '/profile',
+    authMiddleware.auth.bind(authMiddleware),
+    userController.profile.bind(userController),
+)
+
 export { UserRouter };

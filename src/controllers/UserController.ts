@@ -28,10 +28,9 @@ export class UserController implements IUserController {
         UserController.instance = new UserController(userService, authenticationService);
 
         return UserController.instance;
-
     }
 
-    async listUsers(req: Request & {user?: JwtPayload}, res: Response<TUserResponseDto[] | TError>) {
+    async listUsers(req: Request & {user?: JwtPayload}, res: Response<TUserResponseDto[] | TError>): Promise<void> {
         try {
 
             if(!req.user || req.user.role !== 'ADMIN'){
@@ -41,13 +40,23 @@ export class UserController implements IUserController {
                         message: 'Unauthorized'
                     }
                 );
+                
+                return;
             }
 
             const users = await this.userService.getUsers();
             res.status(StatusCodes.OK).json(users);
+
+            return;
         }
-        catch(err){
-            throw new Error((err as Error).message);
+        catch {
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json(
+                {
+                    code: StatusCodes.INTERNAL_SERVER_ERROR,
+                    message: 'Internal Server Error'
+                }
+            );
         }
     }
 
@@ -55,32 +64,69 @@ export class UserController implements IUserController {
         
         try {
 
-            if(!req.user){
-                throw new Error('Internal Server Error');
+            const user = await this.userService.getUser(req.params.id);
+
+            if(!req.user || req.user.role !== 'ADMIN' && user.role !== 'USER'){
+                res.status(StatusCodes.UNAUTHORIZED).json(
+                    {
+                        code: StatusCodes.UNAUTHORIZED,
+                        message: 'Unauthorized'
+                    }
+                )
+                return;
             }
 
-            if(req.user.role !== 'USER' && req.user.role !== 'ADMIN'){
+            if(req.user.role === 'USER' && user.role === 'ADMIN'){
+                res.status(StatusCodes.BAD_REQUEST)
+                .json(
+                    {
+                        code: StatusCodes.BAD_REQUEST,
+                        message: 'A not admin user cannot make other admin user'
+                    }
+                );
+            }
+
+            if(req.user.role !== "ADMIN" && req.body.role === "ADMIN"){
+                res.status(StatusCodes.UNAUTHORIZED)
+                .json(
+                    {
+                        code: StatusCodes.UNAUTHORIZED,
+                        message: `Users can't be admin` 
+                    }
+                );
+
+                return;
+            }
+
+            if (req.user.role === 'ADMIN'){
+
+                await this.userService.updateUser(user, {...req.body});    
+
+                res.status(StatusCodes.OK).end();
+                return;
+            }
+
+            if(req.user.id !== req.params.id){
                 res.status(StatusCodes.UNAUTHORIZED).json(
                     {
                         code: StatusCodes.UNAUTHORIZED,
                         message: 'Unauthorized'
                     }
                 );
+                return;
             }
 
-            if(req.user.id !== req.params.id){
-                res.status(StatusCodes.BAD_REQUEST).json(
-                    {
-                        code: StatusCodes.BAD_REQUEST,
-                        message: 'Unauthorized'
-                    }
-                )
-            }
+            const userUpdated = await this.userService.updateUser(user, {...req.body});
 
-            const user = await this.userService.updateUser({...req.params}, {...req.body});
-            
-            res.status(StatusCodes.OK).json({...user});
+            res.status(StatusCodes.OK).json(
+                {
+                    ...userUpdated
+                }
+            );
+
+            return;
         }
+
         catch(err) {
             res.status(StatusCodes.BAD_REQUEST).json(
                 {
@@ -185,6 +231,29 @@ export class UserController implements IUserController {
 
             return;
         }               
+    }
+
+    async profile(req: Request & {user?: JwtPayload}, res: Response<TUserResponseDto | TError>): Promise<void> {
+
+        try {
+            if(!req.user){
+                throw new Error('INTERNAL SERVER ERROR');
+            }
+
+            const user = await this.userService.getUser(req.user.id);
+
+            res.status(StatusCodes.OK)
+            .json(user);
+        }
+        catch(err){
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json(
+                {
+                    code: StatusCodes.INTERNAL_SERVER_ERROR,
+                    message: (err as Error).message
+                }
+            )
+        }
     }
 
     async register(req: Request<{}, {}, TRegisterUserRequestDto>, res: Response<TUserResponseDto | TError>): Promise<void> {

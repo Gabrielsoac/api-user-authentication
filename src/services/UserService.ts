@@ -1,6 +1,6 @@
 import { TRegisterUserRequestDto } from "../controllers/dtos/TRegisterUserRequestDto";
-import { TGetUserRequestDto } from "../controllers/dtos/TGetUserRequestDto";
 import { IUserRepository } from "../repositories/IUserRepository";
+import { EncryptPassword } from "./EncryptPassword";
 import { IUserService } from "./IUserService";
 import { TUserPersisted } from "./TUserPersisted";
 
@@ -57,11 +57,30 @@ export class UserService implements IUserService {
         }
     }
 
-    async updateUser(userId: TGetUserRequestDto, userData: TRegisterUserRequestDto): Promise<TUserPersisted> {
+    async updateUser(user: TUserPersisted, userData: TRegisterUserRequestDto): Promise<TUserPersisted> {
+        
         try{
-            const user = await this.userRepository.updateUserById(userId, userData);
+            const usernameAlreadyExists = await this.userRepository.findUserByUsername(userData.username);
+            const emailAlreadyExists = await this.userRepository.findUserByEmail(userData.email);
 
-            return user;
+            if(usernameAlreadyExists && usernameAlreadyExists.username !== user.username){
+                throw new Error(`User with username ${userData.email} already exists`);
+            }
+
+            if(emailAlreadyExists && emailAlreadyExists.email !== user.email){
+                throw new Error(`User with email ${userData.email} already exists`);
+            }
+
+            const userUpdated = await this.userRepository.updateUserById(
+                user.id,
+                {
+                    username: userData.username,
+                    email: userData.email,
+                    password: await EncryptPassword(userData.password),
+                    role: userData.role
+                }
+            );
+            return userUpdated;
         }
         catch(err) {
             throw new Error((err as Error).message);
@@ -69,8 +88,6 @@ export class UserService implements IUserService {
     }
 
     async deleteUser(userId: string): Promise<void> {
-
-        console.log('Cheguei no delete User');
 
         try {
             await this.userRepository.deleteUserById(userId);
