@@ -14,7 +14,6 @@ export class AuthenticationService {
 
     private SECRET_KEY: string | undefined = process.env.SECRET_KEY;
 
-
     private constructor(userRepository: IUserRepository){
         this.userRepository = userRepository;
     }
@@ -91,6 +90,7 @@ export class AuthenticationService {
                     username: data.username,
                     email: data.email,
                     password: encryptedPassword,
+                    role: data.role
                 }
             );
             return user;
