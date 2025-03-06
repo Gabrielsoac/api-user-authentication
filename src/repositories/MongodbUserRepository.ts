@@ -78,6 +78,11 @@ export class MongoDbUserRepository implements IUserRepository {
     
     async createUser(userData: TRegisterUserRequestDto): Promise<TUserPersisted> {
         try {
+
+            if(!userData.role){
+                userData.role = 'USER';
+            }
+
             const user = await UserModel.create(
                 {...userData}
             );

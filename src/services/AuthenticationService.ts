@@ -49,7 +49,7 @@ export class AuthenticationService {
                     {
                         id: user.id,
                         username: user.username,
-                        role: 'ADMIN',
+                        role: user.role
                     },
                     this.SECRET_KEY,
                     {
@@ -69,7 +69,6 @@ export class AuthenticationService {
     public async register(data: TRegisterUserRequestDto): Promise<TUserPersisted> {
 
         try {
-
             const usernameAlreadyExists = await this.userRepository.findUserByUsername(data.username);
             const emailAlreadyExists = await this.userRepository.findUserByEmail(data.email);
 
