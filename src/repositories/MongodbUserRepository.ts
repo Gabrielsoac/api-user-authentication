@@ -128,9 +128,9 @@ export class MongoDbUserRepository implements IUserRepository {
         }
     }
     
-    async deleteUserById(userId: TGetUserRequestDto): Promise<void> {
+    async deleteUserById(userId: string): Promise<void> {
         try {
-            const user = await UserModel.findByIdAndDelete(userId.id);
+            const user = await UserModel.findByIdAndDelete(userId);
 
             if(!user){
                 throw new Error('User not found');

@@ -7,5 +7,5 @@ export interface IUserService {
     getUser(id: string): Promise<TUserPersisted>;
     getUsers(): Promise<TUserPersisted[]>;
     updateUser(userId: TGetUserRequestDto, userData: TRegisterUserRequestDto): Promise<TUserPersisted>
-    deleteUser(userId: TGetUserRequestDto): Promise<void>
+    deleteUser(userId: string): Promise<void>
 }

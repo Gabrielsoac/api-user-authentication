@@ -68,9 +68,12 @@ export class UserService implements IUserService {
         }
     }
 
-    async deleteUser(userId: TGetUserRequestDto): Promise<void> {
+    async deleteUser(userId: string): Promise<void> {
+
+        console.log('Cheguei no delete User');
+
         try {
-            this.userRepository.deleteUserById(userId);
+            await this.userRepository.deleteUserById(userId);
         }
         catch(err){
             throw new Error((err as Error).message);

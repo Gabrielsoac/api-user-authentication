@@ -31,8 +31,18 @@ export class UserController implements IUserController {
 
     }
 
-    async listUsers(_: Request, res: Response<TUserResponseDto[]>) {
+    async listUsers(req: Request & {user?: JwtPayload}, res: Response<TUserResponseDto[] | TError>) {
         try {
+
+            if(!req.user || req.user.role !== 'ADMIN'){
+                res.status(StatusCodes.UNAUTHORIZED).json(
+                    {
+                        code: StatusCodes.UNAUTHORIZED,
+                        message: 'Unauthorized'
+                    }
+                );
+            }
+
             const users = await this.userService.getUsers();
             res.status(StatusCodes.OK).json(users);
         }
@@ -41,11 +51,35 @@ export class UserController implements IUserController {
         }
     }
 
-    async updateUser(req: Request<TGetUserRequestDto, {}, TRegisterUserRequestDto>, res: Response<TUserResponseDto | unknown>) {
+    async updateUser(req: Request<TGetUserRequestDto, {}, TRegisterUserRequestDto> & {user?: JwtPayload}, res: Response<TUserResponseDto | TError>) {
+        
         try {
-                const user = await this.userService.updateUser({...req.params}, {...req.body});
-                
-                res.status(StatusCodes.OK).json({...user});
+
+            if(!req.user){
+                throw new Error('Internal Server Error');
+            }
+
+            if(req.user.role !== 'USER' && req.user.role !== 'ADMIN'){
+                res.status(StatusCodes.UNAUTHORIZED).json(
+                    {
+                        code: StatusCodes.UNAUTHORIZED,
+                        message: 'Unauthorized'
+                    }
+                );
+            }
+
+            if(req.user.id !== req.params.id){
+                res.status(StatusCodes.BAD_REQUEST).json(
+                    {
+                        code: StatusCodes.BAD_REQUEST,
+                        message: 'Unauthorized'
+                    }
+                )
+            }
+
+            const user = await this.userService.updateUser({...req.params}, {...req.body});
+            
+            res.status(StatusCodes.OK).json({...user});
         }
         catch(err) {
             res.status(StatusCodes.BAD_REQUEST).json(
@@ -57,11 +91,47 @@ export class UserController implements IUserController {
         }
     }
 
-    async deleteUser(req: Request<TGetUserRequestDto>, res: Response<void | unknown>) {
+    async deleteUser(req: Request<TGetUserRequestDto> & {user?: JwtPayload}, res: Response<void | TError>): Promise<void> {
+        
         try {
-            this.userService.deleteUser({...req.params});    
 
-            res.status(StatusCodes.OK).end()
+            if(!req.user || req.user.role !== 'ADMIN' && req.user.role !== 'USER'){
+                res.status(StatusCodes.UNAUTHORIZED).json(
+                    {
+                        code: StatusCodes.UNAUTHORIZED,
+                        message: 'Unauthorized'
+                    }
+                )
+                return;
+            }
+
+            else if (req.user.role === 'ADMIN'){
+
+                await this.userService.deleteUser(req.params.id);    
+
+                res.status(StatusCodes.OK).end();
+                return;
+            }
+
+            else {
+
+                if(req.user.id !== req.params.id){
+                    res.status(StatusCodes.UNAUTHORIZED).json(
+                        {
+                            code: StatusCodes.UNAUTHORIZED,
+                            message: 'Unauthorized'
+                        }
+                    );
+
+                    return;
+                }
+
+                await this.userService.deleteUser(req.params.id);
+
+                res.status(StatusCodes.NO_CONTENT).end();
+
+                return;
+            }
         }
         catch(err){
             res.status(StatusCodes.BAD_REQUEST).json(
@@ -69,16 +139,16 @@ export class UserController implements IUserController {
                     code: StatusCodes.BAD_REQUEST,
                     message: (err as Error).message
                 }
-            );
+            )
+            return;
         }
     }
 
-    async getUser(req: Request<TGetUserRequestDto> & {user?: JwtPayload}, res: Response<TUserResponseDto | unknown>) {
+    async getUser(req: Request<TGetUserRequestDto> & {user?: JwtPayload}, res: Response<TUserResponseDto | unknown>): Promise<void> {
 
         try {
 
             if(!req.user) {
-                console.log(req.user);
                 throw new Error('Token Missing');
             }
 
@@ -92,13 +162,17 @@ export class UserController implements IUserController {
                         email: user.email
                     }
                 );
+
+                return;
+
             } else {
                 res.status(StatusCodes.UNAUTHORIZED).json(
                     {
                         code: StatusCodes.UNAUTHORIZED,
                         message: "Unauthorized!"
                     }
-                ).end();
+                );
+                return;
             }
 
         } catch(err) {
@@ -108,10 +182,12 @@ export class UserController implements IUserController {
                     message: ((err as Error).message)
                 }
             )
+
+            return;
         }               
     }
 
-    async register(req: Request<{}, {}, TRegisterUserRequestDto>, res: Response<TUserResponseDto | TError >) {
+    async register(req: Request<{}, {}, TRegisterUserRequestDto>, res: Response<TUserResponseDto | TError>): Promise<void> {
         
         try {
             const user = await this.authenticationService.register({...req.body});
@@ -124,6 +200,7 @@ export class UserController implements IUserController {
                     role: user.role
                 }
             );
+            return;
 
         } catch(err){
             res.status(StatusCodes.BAD_REQUEST).json(
@@ -132,6 +209,7 @@ export class UserController implements IUserController {
                     message: (err as Error).message
                 }
             )
+            return;
         }
     }
 }

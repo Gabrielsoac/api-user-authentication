@@ -9,5 +9,5 @@ export interface IUserRepository {
     findUsers(): Promise<TUserPersisted[]>;
     createUser(userData: TRegisterUserRequestDto): Promise<TUserPersisted>;
     updateUserById(userId: TGetUserRequestDto, userData: TRegisterUserRequestDto): Promise<TUserPersisted>
-    deleteUserById(userId: TGetUserRequestDto): Promise<void>
+    deleteUserById(userId: string): Promise<void>
 }

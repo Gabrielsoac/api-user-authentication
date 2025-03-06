@@ -18,20 +18,38 @@ const userController = UserController.getUserController(userService, authenticat
 
 const authMiddleware = AuthenticationMiddleware.getAuthenticationMiddleware(authenticationService);
 
-UserRouter.get(
-    '/:id',
-    authMiddleware.auth.bind(authMiddleware),
-    userController.getUser.bind(userController)
-);
-
 UserRouter.post(
     '/register',
-    userController.register.bind(userController)
+    userController.register.bind(userController),
 );
 
 UserRouter.post(
     '/login',
     loginController.login.bind(loginController),
+)
+
+UserRouter.get(
+    '/:id',
+    authMiddleware.auth.bind(authMiddleware),
+    userController.getUser.bind(userController),
+);
+
+UserRouter.get(
+    '/',
+    authMiddleware.auth.bind(authMiddleware),
+    userController.listUsers.bind(userController),
+)
+
+UserRouter.put(
+    '/:id',
+    authMiddleware.auth.bind(authMiddleware),
+    userController.updateUser.bind(userController),
+)
+
+UserRouter.delete(
+    '/:id',
+    authMiddleware.auth.bind(authMiddleware),
+    userController.deleteUser.bind(userController),
 )
 
 export { UserRouter };
