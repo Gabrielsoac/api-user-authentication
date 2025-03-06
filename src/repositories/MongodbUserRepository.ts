@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 // import { UserModel } from "../database/model/UserSchema";
 import { TRegisterUserRequestDto } from "../controllers/dtos/TRegisterUserRequestDto";
 import { TGetUserRequestDto } from "../controllers/dtos/TGetUserRequestDto";
 import { UserModel } from "../database/model/UserSchema";
 import { TUserPersisted } from "../services/TUserPersisted";
 import { IUserRepository } from "./IUserRepository";
+import mongoose, { Document } from "mongoose";
+import { TUserProps } from "../database/model/TUserProps";
 
 export class MongoDbUserRepository implements IUserRepository {
 
@@ -30,12 +33,7 @@ export class MongoDbUserRepository implements IUserRepository {
                 return null;
             }
 
-            return {
-                id: user._id.toString(),
-                username: user.username,
-                email: user.email,
-                password: user.password
-            }
+            return this.createTUSerPersisted(user);
         }   
         catch(err) {
             throw new Error((err as Error).message);
@@ -55,12 +53,7 @@ export class MongoDbUserRepository implements IUserRepository {
                 return null;
             }
 
-            return {
-                id: user._id.toString(),
-                username: user.username,
-                email: user.email,
-                password: user.password
-            }
+            return this.createTUSerPersisted(user);
         } catch(err){
             throw new Error((err as Error).message);
         }
@@ -72,12 +65,7 @@ export class MongoDbUserRepository implements IUserRepository {
 
             const usersPersisted = users.map(
                 (x) => {
-                    return {
-                        id: x._id.toString(),
-                        username: x.username,
-                        email: x.email,
-                        password: x.password
-                    }
+                    return this.createTUSerPersisted(x);
                 }
             );
 
@@ -98,7 +86,8 @@ export class MongoDbUserRepository implements IUserRepository {
                 id: user._id.toString(),
                 username: user.username,
                 email: user.email,
-                password: user.password
+                password: user.password,
+                role: user.role
             }
         }
         catch(err){
@@ -127,12 +116,7 @@ export class MongoDbUserRepository implements IUserRepository {
                 throw new Error('User not found');
             }
 
-            return {
-                id: user.id.toString(),
-                username: user.username,
-                email: user.email,
-                password: user.password
-            };
+            return this.createTUSerPersisted(user);
         }
         catch(err){
             throw new Error((err as Error).message);
@@ -162,15 +146,20 @@ export class MongoDbUserRepository implements IUserRepository {
                 return null;
             }
 
-            return {
-                id: user._id.toString(),
-                username: user.username,
-                email: user.email,
-                password: user.password
-            }
+            return this.createTUSerPersisted(user);
         }
         catch(err){
             throw new Error((err as Error).message);
         }
+    }
+
+    private createTUSerPersisted(user: Document<unknown, {}, TUserProps> & TUserProps & {_id: mongoose.Types.ObjectId}): TUserPersisted {
+        return {
+            id: user._id.toString(),
+            username: user.username,
+            email: user.email,
+            password: user.password,
+            role: user.role
+        } 
     }
 }
