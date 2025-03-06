@@ -1,0 +1,31 @@
+services:
+  app:
+    image: node:18-alpine3.20
+    volumes:
+      - .:/app
+      - /app/node_modules
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    environment:
+      USER_DB: teste
+      PASSWORD_DB: teste
+      PORT: 3000
+      SECRET_KEY: teste
+
+    command: >
+      sh -c "npm install && npm install -g typescript && npm run dev"
+
+  mongodb:
+    image: mongo:5.0
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: teste
+      MONGO_INITDB_ROOT_PASSWORD: teste
+    volumes:
+      - mongodb_data:/data/db
+volumes:
+  mongodb_data:
