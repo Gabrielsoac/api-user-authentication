@@ -5,6 +5,7 @@ import { IUserRepository } from '../repositories/IUserRepository';
 import { TUserPersisted } from './TUserPersisted';
 import { TRegisterUserRequestDto } from '../controllers/dtos/TRegisterUserRequestDto';
 import { TLoginUserRequestDto } from '../controllers/dtos/TLoginUserRequestDto';
+import { EncryptPassword } from './EncryptPassword';
 
 export class AuthenticationService {
 
@@ -80,9 +81,7 @@ export class AuthenticationService {
                 throw new Error(`User with email ${data.email} already exists`);
             }
 
-            const saltRounds = await bcrypt.genSalt(10);
-
-            const encryptedPassword = await bcrypt.hash(data.password, saltRounds);
+            const encryptedPassword = await EncryptPassword(data.password);
 
             const user = await this.userRepository.createUser(
                 {
