@@ -244,6 +244,8 @@ export class UserController implements IUserController {
 
             res.status(StatusCodes.OK)
             .json(user);
+
+            return;
         }
         catch(err){
             res.status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -253,6 +255,8 @@ export class UserController implements IUserController {
                     message: (err as Error).message
                 }
             )
+
+            return;
         }
     }
 
