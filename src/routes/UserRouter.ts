@@ -5,6 +5,8 @@ import { AuthenticationService } from '../services/AuthenticationService';
 import { LoginController } from '../controllers/LoginController';
 import { UserController } from '../controllers/UserController';
 import { AuthenticationMiddleware } from '../middleware/AuthenticationMiddleware';
+import { RegisterUserValidation } from '../middleware/RegisterUserValidation';
+import { LoginValidation } from '../middleware/LoginValidation';
 
 const UserRouter = Router();
 
@@ -20,11 +22,13 @@ const authMiddleware = AuthenticationMiddleware.getAuthenticationMiddleware(auth
 
 UserRouter.post(
     '/register',
+    RegisterUserValidation,
     userController.register.bind(userController),
 );
 
 UserRouter.post(
     '/login',
+    LoginValidation,
     loginController.login.bind(loginController),
 )
 
