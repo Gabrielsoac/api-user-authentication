@@ -7,6 +7,7 @@ import { UserController } from '../controllers/UserController';
 import { AuthenticationMiddleware } from '../middleware/AuthenticationMiddleware';
 import { RegisterUserValidation } from '../middleware/RegisterUserValidation';
 import { LoginValidation } from '../middleware/LoginValidation';
+import { FindUserByIdDataValidation } from '../middleware/FindUserByIdValidation';
 
 const UserRouter = Router();
 
@@ -40,6 +41,7 @@ UserRouter.get(
 
 UserRouter.get(
     '/:id',
+    FindUserByIdDataValidation,
     authMiddleware.auth.bind(authMiddleware),
     userController.getUser.bind(userController),
 );
@@ -52,12 +54,15 @@ UserRouter.get(
 
 UserRouter.put(
     '/:id',
+    FindUserByIdDataValidation,
+    RegisterUserValidation,
     authMiddleware.auth.bind(authMiddleware),
     userController.updateUser.bind(userController),
 )
 
 UserRouter.delete(
     '/:id',
+    FindUserByIdDataValidation,
     authMiddleware.auth.bind(authMiddleware),
     userController.deleteUser.bind(userController),
 )
