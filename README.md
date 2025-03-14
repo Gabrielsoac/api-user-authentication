@@ -16,9 +16,9 @@ Esta API foi desenvolvida visando criar a autenticação de usuários cadastrado
 
 ### Algumas informações importantes antes de rodar o projeto
 
-1. A aplicação da API utiliza por padrão a porta *3000*, caso precise alterar esta porta por qualquer motivo que seja, altere dentro do *docker-compose.yaml*
+1. A aplicação da API utiliza por padrão a porta ```3000```, caso precise alterar esta porta por qualquer motivo que seja, altere dentro do ```docker-compose.yaml```
 
-2. O banco de dados da aplicação é o MongoDb na versão 5.0 que utiliza a porta 27017 como padrão, caso possua algum mongodb local rodando, siga este passo à passo (Linux Debian):
+2. O banco de dados da aplicação é o MongoDb na versão 5.0 que utiliza a porta ```27017``` como padrão, caso possua algum mongodb local rodando, siga este passo à passo (Linux Debian):
 
     
     #### Este comando irá parar o service do mongodb local e impedir que haja conflito:
@@ -26,7 +26,6 @@ Esta API foi desenvolvida visando criar a autenticação de usuários cadastrado
 
     #### Após realizar o teste do projeto, poderá iniciar novamente o seu mongodb local com este comando:
     ```sudo systemctl start mongod```
-
 
 > Caso seu sistema operacional seja diferente, adapte as resoluções para sua realidade.
 
@@ -50,13 +49,19 @@ Esta API foi desenvolvida visando criar a autenticação de usuários cadastrado
 
 ### End-Points
 
+> Todos os endpoints que são privates precisam de autenticação e um nível de permissão, caso tente acessar um endpoint privado sem autenticação ou sem o nível de permissão necessário, receberá o retorno ```401``` (Unauthorized)
+
 #### /Register (POST)
-- Código de retorno: ```201``` (CREATED)
-- Método Rest: ```POST```
+- Tipo: ```public```
 - Descrição: Realiza o cadastro de um novo usuário, podendo lançar erros caso o nome de usuário ou email já exista
-- Método de envio de dados: ```Body```
-- Modelo de dado enviado via body: ```json```
-- Exemplo de JSON de envio:
+- Método Rest: ```POST```
+- Código de retorno: ```201``` (CREATED)
+- Código de retorno caso haja problemas de usuário já existente: ```409``` (CONFLICT)
+- Código de retorno caso haja problemas não esperados ```500``` (INTERNAL SERVER ERROR)
+
+- Envio de dados via: ```Body```
+- Modelo de dados: ```json```
+- Exemplo de envio:
     ```
     {
         "username": "johndoe",
@@ -65,7 +70,7 @@ Esta API foi desenvolvida visando criar a autenticação de usuários cadastrado
         "role": "USER"
     }
     ```
-- Exemplo de JSON de retorno:
+- Exemplo de retorno:
 
     ```
     {
@@ -79,12 +84,16 @@ Esta API foi desenvolvida visando criar a autenticação de usuários cadastrado
     ```
 
 #### /Login (POST)
+- Tipo: ```public```
+- Descrição: Realiza o login de um usuário já cadastrado, podendo lançar erros caso o nome de usuário ou senha está incorreto, retorna um token jwt para ser utilizado nas próximas requisições
 - Método Rest: ```POST```
 - Código de retorno: ```200``` (OK)
-- Descrição: Realiza o login de um usuário já cadastrado, podendo lançar erros caso o nome de usuário ou senha está incorreto, retorna um token jwt para ser utilizado nas próximas requisições
-- Método de envio de dados: ```Body```
-- Modelo de dado enviado via body: ```json```
-- Exemplo de JSON de envio:
+- Código de retorno caso usuário e senha inválidos: ```400``` (BAD REQUEST)
+- Código de retorno caso haja problemas não esperados ```500``` (INTERNAL SERVER ERROR)
+
+- Envio de dados via: ```Body```
+- Modelo de dados: ```json```
+- Exemplo de envio:
     ```
     {
 	    "username": "johndoe",
@@ -99,14 +108,16 @@ Esta API foi desenvolvida visando criar a autenticação de usuários cadastrado
     ```
 
 #### /profile (GET)
-- Método Rest: ```GET```
-- Código de retorno: ```200``` (OK)
 - Descrição: Visualiza o perfil do usuário autenticado
+- Método Rest: ```GET```
+- ROLE: ```any```
+- Código de retorno: ```200``` (OK)
+- Código de retorno caso erro não esperado: ```500``` (INTERNAL SERVER ERROR)
 - Método de envio de dados: ```none```
 - Modelo de dado enviado via body: ```none```
-- Necessário enviar um Token JWT Válido para realizar esta requisição
 
-> OBS: Não é uma boa prática retornar a senha do usuário em seus dados de perfil, para fins didáticos e de aprendizado, foi retornado o usuário completo.
+```Necessário enviar um Token JWT Válido para realizar esta requisição```
+
 - Exemplo de Token retornado:
     ```
     {
@@ -118,15 +129,21 @@ Esta API foi desenvolvida visando criar a autenticação de usuários cadastrado
     }
     ```
 
-#### /id (GET)
-- Método Rest: ```GET```
+> OBS: Não é uma boa prática retornar a senha do usuário em seus dados de perfil, para fins didáticos e de aprendizado, foi retornado o usuário completo.
+
+
+#### /{id} (GET)
+- Tipo: ```private```
 - Descrição: Visualiza o perfil de um usuário
+- Método Rest: ```GET```
 - ROLE: ```ADMIN```
-- Método de envio de dados: ```params```
-- Modelo de dado enviado via params: ```localhost:3000/67c9f1c52e575f8a7531c182```
-- Necessário enviar um Token JWT Válido para realizar esta requisição
+- Código de retorno: ```200``` (OK)
+- Código de retorno caso erro não esperado: ```500``` (INTERNAL SERVER ERROR)
+- Envio de dados via: ```params```
+- Modelo de dados enviado: ```localhost:3000/67c9f1c52e575f8a7531c182```
 
-> OBS: Não é uma boa prática retornar a senha do usuário em seus dados de perfil, para fins didáticos e de aprendizado, foi retornado o usuário completo.
+```Necessário enviar um Token JWT Válido para realizar esta requisição```
+
 - Exemplo de Token retornado:
     ```
     {
@@ -137,11 +154,14 @@ Esta API foi desenvolvida visando criar a autenticação de usuários cadastrado
         "role": "USER"
     }
     ```
+> OBS: Não é uma boa prática retornar a senha do usuário em seus dados de perfil, para fins didáticos e de aprendizado, foi retornado o usuário completo.
 
 #### / (GET)
+- Tipo: ```private```
+- Descrição: Visualiza o perfil de todos os usuários
 - Método Rest: ```GET```
 - Código de retorno: ```200``` (OK)
-- Descrição: Visualiza o perfil de todos os usuários
+- Código de retorno caso erro não esperado: ```500``` (INTERNAL SERVER ERROR)
 - ROLE: ```ADMIN```
 - Método de envio de dados: ```none```
 - Modelo de url: ```localhost:3000/```
@@ -168,10 +188,11 @@ Esta API foi desenvolvida visando criar a autenticação de usuários cadastrado
     ]
     ```
 
-#### /id (PUT)
-
+#### /{id} (PUT)
+- Tipo: ```private```
 - Método Rest: ```PUT```
 - Código de retorno: ```200``` (OK)
+- Código de retorno caso erro não esperado: ```500``` (INTERNAL SERVER ERROR)
 - Descrição: Realiza a atualização de um usuário, podendo lançar erros caso o nome de usuário ou email já exista, usuários podem atualizar apenas o seu próprio perfil, administradores podem atualizar qualquer perfil.
 - ROLE: ```ADMIN``` e ```USER```
 - Método de envio de dados: ```params```
@@ -199,9 +220,11 @@ Esta API foi desenvolvida visando criar a autenticação de usuários cadastrado
     }
     ```
 
-#### /id (DELETE)
+#### /{id} (DELETE)
+- Tipo: ```private```
 - Método Rest: ```DELETE```
 - Código de retorno: ```204``` (NO CONTENT)
+- Código de retorno caso erro não esperado: ```500``` (INTERNAL SERVER ERROR)
 - Descrição: Deleta um usuário, usuários com a role USER conseguem deletar apenas a si mesmos, usuários com a role ADMIN conseguem deletar a si e a outros usuários. 
 - ROLE: ```ADMIN``` e ```USER```
 - Método de envio de dados: ```params```
